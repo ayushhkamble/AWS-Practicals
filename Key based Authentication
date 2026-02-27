@@ -1,0 +1,215 @@
+
+# 🔐 Practical: SSH Key-Based Authentication for Custom User in EC2
+
+---
+
+## 📌 Objective
+
+To configure secure SSH key-based authentication for a newly created Linux user inside an Ubuntu EC2 instance and obtain remote shell access without password authentication.
+
+---
+
+## 🏗️ Architecture Overview
+
+### 🔷 Services Used
+
+* Amazon Web Services
+* Amazon EC2
+* Security Groups
+* SSH Protocol
+
+---
+
+## 🧭 Architecture Diagram (Logical View)
+
+```
++---------------------+                 +---------------------------+
+|     Local Machine   |                 |     EC2 Instance          |
+|---------------------|                 |---------------------------|
+| Private Key (key)   |  SSH Port 22    | Ubuntu Server             |
+|                     | ---------------> |                           |
+| ssh -i key ram@IP   |                 | /home/ram/.ssh/           |
+|                     |                 |   └── authorized_keys     |
++---------------------+                 +---------------------------+
+```
+
+---
+
+## 🔎 Architecture Explanation (For Interview)
+
+1. The **client machine** generates an SSH key pair using `ssh-keygen`.
+2. The **public key** is copied to the EC2 server.
+3. Inside the EC2 instance:
+
+   * A new user (`ram`) is created.
+   * A `.ssh` directory is created in the user’s home directory.
+   * The public key is placed inside `authorized_keys`.
+4. When SSH login is attempted:
+
+   * The server compares the client’s private key with the stored public key.
+   * If matched → Access granted.
+   * If not matched → Access denied.
+
+Security Group allows inbound traffic on **Port 22 (SSH)**.
+
+---
+
+# 📖 Implementation Steps
+
+---
+
+## Step 1: Generate SSH Key Pair (Local Machine)
+
+```bash
+ssh-keygen
+```
+
+Generated:
+
+* `key` → Private Key
+* `key.pub` → Public Key
+
+---
+
+## Step 2: Launch EC2 Instance
+
+* Ubuntu-based EC2 instance created.
+* Key pair used: `ayush.pem`
+* Security Group allowed inbound SSH (Port 22).
+
+---
+
+## Step 3: Transfer Public Key to Server
+
+```bash
+scp -i ayush.pem key.pub ubuntu@<public-ip>:/home/ubuntu
+```
+
+---
+
+## Step 4: Verify File Transfer
+
+```bash
+ls
+```
+
+Confirmed presence of `key.pub`.
+
+---
+
+## Step 5: Rename Public Key
+
+```bash
+mv key.pub authorized_keys
+```
+
+---
+
+## Step 6: Create New User
+
+```bash
+sudo adduser ram
+```
+
+---
+
+## Step 7: Create .ssh Directory
+
+```bash
+sudo mkdir /home/ram/.ssh
+```
+
+---
+
+## Step 8: Move authorized_keys File
+
+```bash
+sudo mv authorized_keys /home/ram/.ssh/
+```
+
+---
+
+## Step 9: Set Correct Permissions (Very Important)
+
+```bash
+sudo chmod 700 /home/ram/.ssh
+sudo chmod 600 /home/ram/.ssh/authorized_keys
+sudo chown -R ram:ram /home/ram/
+```
+
+### 🔐 Why Permissions Matter?
+
+| Path              | Permission | Reason                                    |
+| ----------------- | ---------- | ----------------------------------------- |
+| `.ssh`            | 700        | Only user should access directory         |
+| `authorized_keys` | 600        | Prevent unauthorized reading/modification |
+
+If permissions are incorrect → SSH login fails.
+
+---
+
+## Step 10: Login as New User
+
+From local system:
+
+```bash
+ssh -i key ram@<public-ip>
+```
+
+
+# ✅ Final Result
+
+Successfully obtained secure SSH remote shell for user `ram` using key-based authentication without password.
+
+
+# 🔒 Security Best Practices (Interview Highlight)
+
+* Disable password authentication in `/etc/ssh/sshd_config`
+* Use least privilege IAM access
+* Restrict SSH access to specific IP in Security Group
+* Rotate keys periodically
+* Never share private keys
+
+
+# 🎯 Interview Questions You Can Answer Now
+
+### 1️⃣ How does SSH key authentication work?
+
+Public key is stored on server → Private key remains on client → Cryptographic handshake validates identity.
+
+---
+
+### 2️⃣ Why do we set 700 and 600 permissions?
+
+Because SSH refuses login if directory or file is accessible by others (security risk).
+
+
+### 3️⃣ Difference between Password and Key Authentication?
+
+| Password Auth        | Key Auth                 |
+| -------------------- | ------------------------ |
+| Less secure          | More secure              |
+| Brute-force possible | Cryptographic validation |
+| Manual login         | Automated secure login   |
+
+
+### 4️⃣ What is authorized_keys?
+
+It is a file inside `.ssh` directory that stores allowed public keys for that user.
+
+
+# 📚 Key Learnings
+
+* Linux user management
+* SSH key authentication workflow
+* File permission security
+* SCP file transfer
+* EC2 security configuration
+* Real-world secure remote access setup
+
+
+# 🚀 Resume Impact Line (You Can Use This)
+
+> Implemented secure SSH key-based authentication for custom Linux users on AWS EC2 instances by configuring authorized_keys, permissions, and access control policies.
+
+
