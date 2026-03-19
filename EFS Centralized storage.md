@@ -1,4 +1,3 @@
-
 # 🚀 AWS EFS Practical
 
 ### 📂 Mounting Amazon EFS on Two EC2 Instances (Multi-AZ Setup)
