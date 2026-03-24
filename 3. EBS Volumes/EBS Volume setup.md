@@ -62,7 +62,7 @@ EC2 → Instances → Launch Instance
 | ------------- | --------------------- |
 | Instance Name | EBS-Practical         |
 | AMI           | Amazon Linux / Ubuntu |
-| Instance Type | t2.micro (Free Tier)  |
+| Instance Type | t3.micro (Free Tier)  |
 | Key Pair      | Create or Select      |
 | Network       | Default               |
 | Storage       | Default               |
@@ -113,7 +113,7 @@ Actions → Attach Volume
 | Setting     | Value                    |
 | ----------- | ------------------------ |
 | Instance    | Select your EC2 instance |
-| Device Name | /dev/sdf                 |
+| Device Name | /dev/xvdbz                 |
 
 4️⃣ Click **Attach Volume**
 
@@ -147,17 +147,17 @@ Expected output:
 xvda      8:0    0   8G    0 disk
 └─xvda1
 
-xvdf      8:80   0   200G  0 disk
+nvme1n1    8:80   0   200G  0 disk
 ```
 
-✔ `xvdf` is your new **200 GB EBS disk**
+✔ `nvme1n1` is your new **200 GB EBS disk**
 
 ---
 
 # 📦 Step 6: Create a Partition
 
 ```
-sudo fdisk /dev/xvdf
+sudo fdisk /dev/nvme1n1
 ```
 
 Inside fdisk:
@@ -180,7 +180,7 @@ lsblk
 Now you will see:
 
 ```
-xvdf1   200G
+nvme1n1p1   200G
 ```
 
 ---
@@ -188,7 +188,7 @@ xvdf1   200G
 # 🧱 Step 7: Format the Partition
 
 ```
-sudo mkfs.ext4 /dev/xvdf1
+sudo mkfs -t ext4 /dev/nvme1n1p1
 ```
 
 ---
@@ -204,7 +204,7 @@ sudo mkdir /data
 # 🔌 Step 9: Mount the Volume
 
 ```
-sudo mount /dev/xvdf1 /data
+sudo mount /dev/nvme1n1p1 /data
 ```
 
 Check:
@@ -217,7 +217,7 @@ Expected:
 
 ```
 Filesystem      Size   Used  Avail Mounted on
-/dev/xvdf1      200G   0     200G  /data
+/dev/nvme1n1p1      200G   0     200G  /data
 ```
 
 ---
@@ -243,7 +243,7 @@ sudo nano /etc/fstab
 Add:
 
 ```
-/dev/xvdf1   /data   ext4   defaults,nofail   0   2
+/dev/nvme1n1p1   /data   ext4   defaults,nofail   0   2
 ```
 
 Save and exit.
