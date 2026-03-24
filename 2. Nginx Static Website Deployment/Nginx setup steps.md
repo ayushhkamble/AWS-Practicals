@@ -66,7 +66,7 @@ Advanced Static Website (/var/www/html)
 
    * Name: `Nginx-Advanced-Website`
    * AMI: Ubuntu 22.04 LTS
-   * Instance Type: `t2.micro`
+   * Instance Type: `t3.micro`
    * Key Pair: Select existing key
    * Security Group:
 
