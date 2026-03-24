@@ -1,16 +1,18 @@
+# 🚀 AWS Practical – Nginx Deployment for Advanced Static Website Hosting (Ubuntu EC2)
 
-# 🚀 AWS Practical – Nginx Deployment for Static Website Hosting (Ubuntu EC2)
-
+---
 
 # 📌 Project Title
 
-**Deploying a Static Website on AWS EC2 using Nginx**
+**Deploying an Advanced Static Website on AWS EC2 using Nginx**
 
+---
 
 # 🎯 Objective
 
-To deploy a simple static website using **Nginx Web Server** on an Ubuntu EC2 instance and access it via the Public IP address.
+To deploy a **modern, interactive static website** using **Nginx Web Server** on an Ubuntu EC2 instance and access it via the Public IP address.
 
+---
 
 # 🏗 Architecture Overview
 
@@ -25,17 +27,19 @@ EC2 Instance (Ubuntu 22.04)
       ↓
 Nginx Web Server
       ↓
-Static Website Files (/var/www/html)
+Advanced Static Website (/var/www/html)
 ```
 
+---
 
 # 🛠 Services Used
 
-* Amazon Web Services
+* Amazon Web Services (AWS)
 * Amazon EC2
-* Nginx
+* Nginx Web Server
 * Ubuntu 22.04 LTS
 
+---
 
 # 📝 Pre-requisites
 
@@ -46,22 +50,24 @@ Static Website Files (/var/www/html)
   * SSH (22) → My IP
   * HTTP (80) → 0.0.0.0/0
 
-> ⚠️ Note: We are NOT using UFW firewall. AWS Security Group handles traffic control.
+> ⚠️ Note: AWS Security Group handles firewall rules (UFW not required)
 
+---
 
 # 🚀 Step-by-Step Implementation
 
+---
 
 ## ✅ Step 1: Launch EC2 Instance
 
-1. Login to AWS Console.
-2. Go to EC2 → Launch Instance.
+1. Login to AWS Console
+2. Navigate to EC2 → Launch Instance
 3. Configure:
 
-   * Name: `Nginx-Static-Website`
+   * Name: `Nginx-Advanced-Website`
    * AMI: Ubuntu 22.04 LTS
    * Instance Type: `t2.micro`
-   * Key Pair: Select existing key (.pem)
+   * Key Pair: Select existing key
    * Security Group:
 
      * Allow SSH (22)
@@ -69,20 +75,24 @@ Static Website Files (/var/www/html)
 
 Launch the instance.
 
+---
 
-## ✅ Step 2: Connect to EC2 via SSH
+## ✅ Step 2: Connect via SSH
 
 ```bash
 ssh -i ayush.pem ubuntu@<Public-IP>
 ```
 
+---
 
-## ✅ Step 3: Update System Packages
+## ✅ Step 3: Update System
 
 ```bash
 sudo apt update -y
 sudo apt upgrade -y
 ```
+
+---
 
 ## ✅ Step 4: Install Nginx
 
@@ -96,101 +106,225 @@ Check status:
 sudo systemctl status nginx
 ```
 
-Enable Nginx at boot:
+Enable at boot:
 
 ```bash
 sudo systemctl enable nginx
 ```
 
+---
 
-## ✅ Step 5: Verify Nginx Installation
+## ✅ Step 5: Verify Installation
 
-Open browser:
+Open in browser:
 
 ```
 http://<Public-IP>
 ```
 
-You should see the **default Nginx welcome page**.
+You should see the default Nginx page.
 
 ---
 
-# 🌐 Deploy Static Website
+# 🌐 Deploy Advanced Website
 
+---
 
-## ✅ Step 6: Navigate to Web Root Directory
+## ✅ Step 6: Navigate to Web Directory
 
 ```bash
 cd /var/www/html
 ```
 
-Default root directory:
+---
 
-```
-/var/www/html
-```
-
-## ✅ Step 7: Remove Default Page
+## ✅ Step 7: Remove Default Files
 
 ```bash
-sudo rm index.nginx-debian.html
+sudo rm -rf *
 ```
 
+---
 
-## ✅ Step 8: Create Simple Static Website
+## ✅ Step 8: Create Website Files
+
+Create HTML:
 
 ```bash
-sudo nano index.html
+sudo vim index.nginx-debian.html
 ```
 
 Paste:
 
-html
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My AWS Nginx Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Demo Website</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome to My Static Website 🚀</h1>
-    <p>Hosted on AWS EC2 using Nginx</p>
+
+<header>
+    <nav class="navbar">
+        <h1 class="logo">MyDemo</h1>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+        <button id="themeToggle">🌙</button>
+    </nav>
+</header>
+
+<section id="home" class="hero">
+    <h2 id="typing"></h2>
+    <p>Hosted on AWS EC2 using Nginx 🚀</p>
+    <button onclick="openModal()">Explore</button>
+</section>
+
+<section id="features" class="features">
+    <h2>Features</h2>
+    <div class="card-container">
+        <div class="card" onclick="showAlert('Fast Performance ⚡')">
+            <h3>Speed</h3>
+        </div>
+        <div class="card" onclick="showAlert('Secure 🔐')">
+            <h3>Security</h3>
+        </div>
+        <div class="card" onclick="showAlert('Responsive 📱')">
+            <h3>Responsive</h3>
+        </div>
+    </div>
+</section>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" class="close">&times;</span>
+        <h2>Welcome 🎉</h2>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 AWS Nginx Project</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
-
-
-Save and exit.
+```
 
 ---
 
-## ✅ Step 9: Set Proper Permissions
+## ✅ Step 9: Create CSS File
+
+```bash
+sudo vim style.css
+```
+
+Paste:
+
+```css
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: #111;
+    color: white;
+}
+
+.hero {
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.card {
+    padding: 20px;
+    margin: 10px;
+    background: #f4f4f4;
+    cursor: pointer;
+}
+```
+
+---
+
+## ✅ Step 10: Create JavaScript File
+
+```bash
+sudo vim script.js
+```
+
+Paste:
+
+```javascript
+let text = "Welcome to My Advanced Website 🚀";
+let i = 0;
+
+function typing() {
+    if (i < text.length) {
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, 50);
+    }
+}
+typing();
+
+function openModal() {
+    document.getElementById("modal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function showAlert(msg) {
+    alert(msg);
+}
+```
+
+---
+
+## ✅ Step 11: Set Permissions
 
 ```bash
 sudo chown -R www-data:www-data /var/www/html
 sudo chmod -R 755 /var/www/html
 ```
 
+---
 
-## ✅ Step 10: Restart Nginx
+## ✅ Step 12: Restart Nginx
 
 ```bash
 sudo systemctl restart nginx
 ```
 
+---
 
-## ✅ Step 11: Access Website
+## ✅ Step 13: Access Website
 
-Open browser:
+Open:
 
 ```
 http://<Public-IP>
 ```
 
-You should see:
+🎉 You will see your **Advanced Interactive Website**
 
-> Welcome to My Static Website 🚀
+---
 
-
-# 📁 Important Nginx Configuration Files
+# 📁 Important Nginx Configuration
 
 Main Config:
 
@@ -198,51 +332,41 @@ Main Config:
 /etc/nginx/nginx.conf
 ```
 
-Default Site Config:
+Default Site:
 
 ```
 /etc/nginx/sites-available/default
 ```
 
-Test Configuration:
+Test Config:
 
 ```bash
 sudo nginx -t
 ```
 
-Reload Configuration:
+Reload:
 
 ```bash
 sudo systemctl reload nginx
 ```
 
+---
+
 # 🔐 Security Best Practices
 
 * Restrict SSH to **My IP only**
-* Do not allow 0.0.0.0/0 for SSH
+* Avoid `0.0.0.0/0` for SSH
 * Keep system updated
-* Use HTTPS in production (Certbot + SSL)
+* Use HTTPS (SSL with Certbot in production)
 
-
-# 🎓 Interview Questions
-
-### Q1: Where are website files stored in Nginx?
-
-/var/www/html
-
-### Q2: How do you check if Nginx is running?
-
-sudo systemctl status nginx
-
-### Q3: Difference between restart and reload?
-
-* Restart → Stops and starts service
-* Reload → Applies config changes without downtime
-
+---
 
 # 🏁 Final Output
 
 ✔ EC2 Instance Running
 ✔ Nginx Installed
-✔ Static Website Hosted
+✔ Advanced Static Website Deployed
+✔ Interactive UI Working
 ✔ Accessible via Public IP
+
+---
