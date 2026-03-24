@@ -249,6 +249,9 @@ Add:
 Save and exit.
 
 ---
+mount -av
+
+---
 
 # 🎯 Practical Outcome
 
