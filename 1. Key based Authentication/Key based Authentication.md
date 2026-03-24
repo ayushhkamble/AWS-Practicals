@@ -95,7 +95,7 @@ Replace `<Public-IP>` with your EC2 public IP address.
 
 Login to server:
 
-ssh -i ayush.pem ubuntu@<Public-IP>
+ssh -i ayush.pem ubuntu@<public_ip>
 
 ## ✅ Step 5: Create a New User
 
