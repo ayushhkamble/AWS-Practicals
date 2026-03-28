@@ -15,13 +15,13 @@ To design and configure a secure AWS network where:
 * A **Public EC2 Instance (Bastion Host)** has direct internet access
 * A **Private EC2 Instance** does **NOT** have direct internet access
 * The private instance accesses the internet **securely via NAT Gateway**
-* Connectivity is verified using **SSH and ping commands**
+* Connectivity is verified using **SSH, SCP, and ping commands**
 
 ---
 
 ## 🧰 Services Used
 
-* Amazon Web Services (AWS)
+* Amazon Web Services
 * Amazon VPC
 * Amazon EC2
 * Internet Gateway
@@ -62,9 +62,11 @@ To design and configure a secure AWS network where:
 
 ## ⚙️ Step-by-Step Implementation
 
+---
+
 ### 🔹 Step 1: Create a Custom VPC
 
-* Go to **VPC Dashboard → Create VPC**
+* Go to VPC Dashboard → Create VPC
 * Name: `My-VPC`
 * CIDR Block: `10.0.0.0/16`
 
@@ -90,7 +92,7 @@ To design and configure a secure AWS network where:
 * Create Internet Gateway → `My-IGW`
 * Attach it to your VPC
 
-> 💡 Internet Gateway allows public subnet resources to access the internet.
+> 💡 Enables internet access for public subnet
 
 ---
 
@@ -99,51 +101,49 @@ To design and configure a secure AWS network where:
 #### 🌍 Public Route Table
 
 * Add Route:
-
-  * `0.0.0.0/0 → Internet Gateway`
-* Associate with **Public Subnet**
+  `0.0.0.0/0 → Internet Gateway`
+* Associate with Public Subnet
 
 #### 🔒 Private Route Table
 
-* Initially no internet route (will add NAT later)
+* Keep empty for now
 
 ---
 
 ### 🔹 Step 5: Allocate Elastic IP
 
 * Go to EC2 → Elastic IPs
-* Allocate new Elastic IP
+* Click Allocate
 
 ---
 
 ### 🔹 Step 6: Create NAT Gateway
 
 * Go to VPC → NAT Gateways
-* Create NAT Gateway in **Public Subnet**
-* Attach **Elastic IP**
+* Create in Public Subnet
+* Attach Elastic IP
 
-> 💡 NAT Gateway must always be in a **Public Subnet**
+> 💡 NAT Gateway must always be in Public Subnet
 
 ---
 
 ### 🔹 Step 7: Update Private Route Table
 
 * Add Route:
-
-  * `0.0.0.0/0 → NAT Gateway`
-* Associate with **Private Subnet**
+  `0.0.0.0/0 → NAT Gateway`
+* Associate with Private Subnet
 
 ---
 
 ### 🔹 Step 8: Launch EC2 Instances
 
-#### 🌍 Public EC2 (Bastion Host)
+#### 🌍 Bastion Host (Public EC2)
 
 * Name: `Bastion-Host`
 * Subnet: Public
 * Auto-assign Public IP: Enabled
 
-#### 🔒 Private EC2
+#### 🔒 Private Instance
 
 * Name: `Private-Instance`
 * Subnet: Private
@@ -157,21 +157,25 @@ To design and configure a secure AWS network where:
 
 * Allow:
 
-  * SSH (Port 22) → Your IP
+  * SSH (22) → Your IP
   * ICMP → Anywhere
+
+---
 
 ### Private Instance SG
 
 * Allow:
 
-  * SSH → From Bastion Host SG
+  * SSH → From Bastion SG
   * ICMP → Anywhere
 
-> 💡 This ensures only Bastion Host can access Private Instance.
+> 💡 Only Bastion can access Private Instance
 
 ---
 
 ## 🔎 Testing & Verification
+
+---
 
 ### 🔹 Step 1: Connect to Bastion Host
 
@@ -181,7 +185,25 @@ ssh -i key.pem ec2-user@<Public-IP>
 
 ---
 
-### 🔹 Step 2: Connect to Private Instance
+### 🔹 Step 2: Copy Private Key to Bastion Host (SCP)
+
+```bash
+scp -i key.pem key.pem ec2-user@<Public-IP>:/home/ec2-user/
+```
+
+👉 Copies key from local machine → Bastion Host
+
+---
+
+### 🔹 Step 3: Set Permission on Bastion
+
+```bash
+chmod 400 key.pem
+```
+
+---
+
+### 🔹 Step 4: Connect to Private Instance
 
 ```bash
 ssh -i key.pem ec2-user@<Private-IP>
@@ -189,7 +211,7 @@ ssh -i key.pem ec2-user@<Private-IP>
 
 ---
 
-### 🔹 Step 3: Check Internet Connectivity
+### 🔹 Step 5: Verify Internet Access
 
 ```bash
 ping google.com
@@ -197,38 +219,38 @@ ping google.com
 
 ---
 
-### 🔹 Step 4: Expected Behavior
+### 🔹 Step 6: Expected Output
 
-* Ping should **work successfully ✅**
-* Private instance accesses internet via NAT Gateway
-
-> 💡 NAT Gateway allows **outbound traffic only**, not inbound.
+* SSH into Private Instance ✅
+* Ping works successfully ✅
+* No public access to private instance ✅
 
 ---
 
-## ✅ Expected Output
+## 🔥 Alternative (Advanced - No Key Copy)
 
-* Successful SSH into Private Instance via Bastion Host
-* `ping google.com` works from Private Instance
-* No direct public access to Private Instance
+```bash
+ssh -A -i key.pem ec2-user@<Public-IP>
+ssh ec2-user@<Private-IP>
+```
+
+👉 Uses SSH Agent Forwarding (More Secure)
 
 ---
 
 ## 📘 Key Learnings
 
-* Difference between **Public vs Private Subnet**
-* Role of **NAT Gateway in secure internet access**
-* Importance of **Route Tables & Security Groups**
-* Bastion Host acts as a **secure entry point**
-* Private instances remain **hidden from the internet**
+* Public vs Private Subnet
+* Role of NAT Gateway
+* Secure access using Bastion Host
+* SCP for file transfer
+* Route Tables & Security Groups
 
 ---
 
 ## 🧹 Cleanup Steps
 
-To avoid AWS charges:
-
-1. Terminate EC2 Instances
+1. Terminate EC2 instances
 2. Delete NAT Gateway
 3. Release Elastic IP
 4. Delete Route Tables
@@ -240,10 +262,11 @@ To avoid AWS charges:
 
 ## 🎉 Conclusion
 
-You have successfully built a **secure AWS network architecture** where:
+You have successfully built a **secure AWS architecture** using Amazon Web Services where:
 
 * Public resources are accessible
 * Private resources are protected
-* Internet access is controlled using **NAT Gateway**
+* Internet access is controlled via NAT Gateway
+* Secure access is achieved using Bastion Host & SCP
 
 ---
