@@ -86,14 +86,56 @@ Create the following files on your local machine:
 
 ```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My S3 Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS S3 Static Website</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>🚀 Welcome to My S3 Hosted Website</h1>
-    <p>This website is hosted on Amazon S3.</p>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">☁️ MyCloudSite</h2>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>🚀 Deployed on AWS S3</h1>
+        <p>Fast • Scalable • Serverless Hosting</p>
+        <button onclick="showMessage()">Click Me</button>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <h2>About This Project</h2>
+        <p>This is a static website hosted on Amazon S3 using public access and bucket policy.</p>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section">
+        <h2>Services</h2>
+        <div class="cards">
+            <div class="card">⚡ Fast Hosting</div>
+            <div class="card">🔒 Secure Storage</div>
+            <div class="card">🌍 Global Access</div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 AWS S3 Practical | Created for DevOps Learning</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
 ````
@@ -108,9 +150,10 @@ Create the following files on your local machine:
 <head>
     <title>Error</title>
 </head>
-<body>
-    <h1>❌ Page Not Found</h1>
+<body style="text-align:center; font-family:Arial; padding:50px;">
+    <h1>404 - Page Not Found ❌</h1>
     <p>The page you are looking for does not exist.</p>
+    <a href="index.html">Go Back Home</a>
 </body>
 </html>
 ```
@@ -120,21 +163,88 @@ Create the following files on your local machine:
 ### 🎨 styles.css
 
 ```css
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    background: #2c3e50;
+    padding: 15px;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+}
+
+.hero {
+    height: 80vh;
+    background: linear-gradient(to right, #3498db, #6dd5fa);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.hero button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    background: #2c3e50;
+    color: white;
+    cursor: pointer;
+}
+
+.section {
+    padding: 40px;
     text-align: center;
-    font-family: Arial;
 }
 
-h1 {
-    color: #2c3e50;
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
 
-p {
-    color: #555;
+.card {
+    background: #ecf0f1;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 10px;
 }
 ```
 
+---
+
+### 🎨 script.js
+
+```js
+function showMessage() {
+    alert("🎉 Your website is live on AWS S3!");
+}
+```
 ---
 
 ## ⚙️ Step-by-Step Implementation
