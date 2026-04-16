@@ -132,12 +132,16 @@ echo "<h1>Welcome to Home Page</h1>" > /var/www/html/index.html
 
 ```bash
 #!/bin/bash
+
 apt update -y
 apt install nginx -y
+
 systemctl start nginx
 systemctl enable nginx
 
-echo "<h1>Welcome to Sell Page</h1>" > /var/www/html/index.html
+mkdir -p /var/www/html/sell
+
+echo "<h1>Welcome to Sell Page</h1>" > /var/www/html/sell/index.html
 ```
 
 ---
@@ -146,12 +150,16 @@ echo "<h1>Welcome to Sell Page</h1>" > /var/www/html/index.html
 
 ```bash
 #!/bin/bash
+
 apt update -y
 apt install nginx -y
+
 systemctl start nginx
 systemctl enable nginx
 
-echo "<h1>Welcome to Fashion Page</h1>" > /var/www/html/index.html
+mkdir -p /var/www/html/fashion
+
+echo "<h1>Welcome to Fashion Page</h1>" > /var/www/html/fashion/index.html
 ```
 
 ---
