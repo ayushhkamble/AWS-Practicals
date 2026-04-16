@@ -390,4 +390,3 @@ To avoid AWS charges:
 * Scalable web applications
 
 ---
-```
