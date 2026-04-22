@@ -3,66 +3,60 @@
 ## 📌 Project Overview
 
 This project demonstrates how to:
-- Host a static website on an AWS EC2 instance using Nginx
-- Connect a custom domain (**ayushk.online**) purchased from Hostinger
-- Configure DNS using AWS Route 53
-- Access your website via a domain name instead of an IP address
+
+* Host a modern static website on an AWS EC2 instance using Nginx
+* Connect a custom domain (**ayushk.online**) purchased from Hostinger
+* Configure DNS using AWS Route 53
+* Access your website globally using a domain name
 
 ---
 
 ## 🎯 Objective
 
-- Deploy a static website on EC2
-- Configure domain mapping using Route 53
-- Make the website publicly accessible via `http://ayushk.online`
+* Deploy a static website on EC2
+* Configure domain mapping using Route 53
+* Make the website publicly accessible via:
+  👉 **[http://ayushk.online](http://ayushk.online)**
 
 ---
 
 ## 🧱 Prerequisites
 
-- AWS Account
-- Domain purchased from Hostinger (`ayushk.online`)
-- Basic knowledge of:
-  - EC2
-  - SSH
-- Key Pair (.pem file)
+* AWS Account
+* Domain purchased from Hostinger (`ayushk.online`)
+* Basic knowledge of EC2 & SSH
+* Key Pair (.pem file)
 
 ---
 
 ## 🧭 Architecture Overview
 
 ```
-
-User Browser → Domain (ayushk.online) → Route 53 → EC2 Elastic IP → Nginx → Website
-
-````
+User Browser → Domain → Route 53 → Elastic IP → EC2 → Nginx → Website
+```
 
 ---
 
 ## 🚀 Step 1: Launch EC2 Instance
 
-### 1. Create Instance
-- Go to AWS EC2 Dashboard
-- Click **Launch Instance**
-- Choose:
-  - AMI: Ubuntu Server 22.04
-  - Instance Type: t2.micro (Free Tier)
+* AMI: Ubuntu 22.04
+* Instance Type: t2.micro (Free Tier)
 
-### 2. Configure Security Group
-Allow:
-- SSH (22)
-- HTTP (80)
-- HTTPS (443)
+### 🔐 Security Group Rules
 
-### 3. Connect via SSH
+* SSH (22)
+* HTTP (80)
+* HTTPS (443)
+
+### Connect to Instance
 
 ```bash
 ssh -i your-key.pem ubuntu@your-ec2-public-ip
-````
+```
 
 ---
 
-## ⚙️ Step 2: Install and Configure Nginx
+## ⚙️ Step 2: Install Nginx
 
 ```bash
 sudo apt update -y
@@ -71,209 +65,164 @@ sudo systemctl start nginx
 sudo systemctl enable nginx
 ```
 
-### Verify Installation
+---
 
-Open browser:
+## 🌐 Step 3: Deploy Static Website (Advanced UI)
 
-```
-http://your-ec2-public-ip
+### Remove Default Files
+
+```bash
+sudo rm -rf /var/www/html/*
+cd /var/www/html
 ```
 
 ---
 
-## 🌐 Step 3: Deploy Static Website
-
-### Remove Default Page
+### 📄 Create index.html
 
 ```bash
-sudo rm /var/www/html/index.nginx-debian.html
+sudo nano index.html
 ```
 
-### Create New Website
-
-```bash
-sudo nano /var/www/html/index.html
-```
-
-### 📄 Demo Website Code (Amazon-style Clone)
+Paste:
 
 ```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Ayush Store</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #f3f3f3;
-        }
-        header {
-            background: #232f3e;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        nav {
-            background: #37475a;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: white;
-            margin: 10px;
-            text-decoration: none;
-        }
-        .container {
-            padding: 20px;
-        }
-        .product {
-            background: white;
-            padding: 15px;
-            margin: 10px;
-            display: inline-block;
-            width: 200px;
-            border-radius: 5px;
-        }
-        .product img {
-            width: 100%;
-        }
-        footer {
-            background: #232f3e;
-            color: white;
-            text-align: center;
-            padding: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayush Store</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-    <h1>🛒 Ayush Online Store</h1>
+<div class="logo">🛒 Ayush Store</div>
+<nav>
+<a href="#">Home</a>
+<a href="#">Products</a>
+<a href="#">Cart</a>
+</nav>
 </header>
 
-<nav>
-    <a href="#">Home</a>
-    <a href="#">Products</a>
-    <a href="#">Deals</a>
-    <a href="#">Contact</a>
-</nav>
+<section class="hero">
+<h1>Big Deals Are Live 🚀</h1>
+<p>Upgrade your lifestyle with trending products</p>
+<button onclick="showAlert()">Shop Now</button>
+</section>
 
-<div class="container">
-    <div class="product">
-        <img src="https://via.placeholder.com/200">
-        <h3>Product 1</h3>
-        <p>₹999</p>
-    </div>
-
-    <div class="product">
-        <img src="https://via.placeholder.com/200">
-        <h3>Product 2</h3>
-        <p>₹1499</p>
-    </div>
-
-    <div class="product">
-        <img src="https://via.placeholder.com/200">
-        <h3>Product 3</h3>
-        <p>₹799</p>
-    </div>
+<section class="products">
+<div class="card">
+<img src="https://via.placeholder.com/200">
+<h3>Headphones</h3>
+<p>₹999</p>
+<button onclick="addToCart('Headphones')">Add to Cart</button>
 </div>
 
+<div class="card">
+<img src="https://via.placeholder.com/200">
+<h3>Smart Watch</h3>
+<p>₹1999</p>
+<button onclick="addToCart('Smart Watch')">Add to Cart</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/200">
+<h3>Shoes</h3>
+<p>₹1499</p>
+<button onclick="addToCart('Shoes')">Add to Cart</button>
+</div>
+</section>
+
 <footer>
-    <p>© 2026 Ayush Store | Built on AWS</p>
+<p>© 2026 Ayush Store | Hosted on AWS</p>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>
 ```
 
-### Save & Exit:
+---
 
+### 🎨 Create style.css
+
+```bash
+sudo nano style.css
 ```
-CTRL + X → Y → ENTER
+
+```css
+body {
+margin: 0;
+font-family: Arial;
+background: #f5f5f5;
+}
+
+header {
+display: flex;
+justify-content: space-between;
+padding: 15px 30px;
+background: #131921;
+color: white;
+}
+
+nav a {
+color: white;
+margin-left: 15px;
+text-decoration: none;
+}
+
+.hero {
+text-align: center;
+padding: 60px;
+background: linear-gradient(to right, #ff9900, #ff6600);
+color: white;
+}
+
+.products {
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+}
+
+.card {
+background: white;
+margin: 15px;
+padding: 15px;
+width: 220px;
+text-align: center;
+border-radius: 10px;
+transition: 0.3s;
+}
+
+.card:hover {
+transform: translateY(-10px);
+box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 ```
 
 ---
 
-## 🌍 Step 4: Configure Elastic IP
+### ⚙️ Create script.js
 
-1. Go to EC2 → Elastic IPs
-2. Click **Allocate Elastic IP**
-3. Click **Associate Elastic IP**
-4. Select your EC2 instance
-
----
-
-## 🌐 Step 5: Setup AWS Route 53
-
-1. Open Route 53 Dashboard
-2. Click **Hosted Zones**
-3. Click **Create Hosted Zone**
-
-### Enter:
-
-* Domain Name: `ayushk.online`
-* Type: Public Hosted Zone
-
-### Note:
-
-You will see **NS Records** like:
-
+```bash
+sudo nano script.js
 ```
-ns-123.awsdns-45.com
-ns-456.awsdns-78.net
+
+```javascript
+function showAlert() {
+alert("Welcome to Ayush Store 🚀");
+}
+
+function addToCart(product) {
+alert(product + " added to cart!");
+}
 ```
 
 ---
 
-## 🔄 Step 6: Update Hostinger DNS
-
-1. Login to Hostinger
-2. Go to Domain → DNS Settings
-3. Replace existing **Nameservers** with Route 53 nameservers
-
-### Example:
-
-```
-ns-123.awsdns-45.com
-ns-456.awsdns-78.net
-```
-
-⏳ **DNS Propagation Time:** 5 minutes to 24 hours
-
----
-
-## 🎯 Step 7: Create A Record in Route 53
-
-1. Go to Hosted Zone → ayushk.online
-2. Click **Create Record**
-
-### Configure:
-
-* Record Type: A
-* Value: Your Elastic IP
-* TTL: Default
-
----
-
-## 🧪 Step 8: Testing
-
-Open browser:
-
-```
-http://ayushk.online
-```
-
----
-
-## 🛠️ Troubleshooting
-
-| Issue              | Solution                            |
-| ------------------ | ----------------------------------- |
-| Site not loading   | Check Security Group (port 80 open) |
-| Domain not working | Wait for DNS propagation            |
-| Wrong page         | Restart nginx                       |
-| Timeout            | Verify Elastic IP attached          |
+### Restart Nginx
 
 ```bash
 sudo systemctl restart nginx
@@ -281,25 +230,72 @@ sudo systemctl restart nginx
 
 ---
 
-## 🔐 Optional: Enable HTTPS (SSL)
+## 🌍 Step 4: Configure Elastic IP
 
-Install Certbot:
+* Go to EC2 → Elastic IPs
+* Allocate Elastic IP
+* Associate with your EC2 instance
+
+---
+
+## 🌐 Step 5: Setup Route 53
+
+* Create Hosted Zone: `ayushk.online`
+* Copy NS records
+
+---
+
+## 🔄 Step 6: Update Hostinger DNS
+
+* Replace nameservers with Route 53 NS
+
+⏳ Wait for propagation (5 min – 24 hrs)
+
+---
+
+## 🎯 Step 7: Create A Record
+
+* Type: A
+* Value: Elastic IP
+
+---
+
+## 🧪 Step 8: Test Website
+
+Open in browser:
+
+```
+http://ayushk.online
+```
+
+---
+
+## 🔐 Optional: Enable HTTPS
 
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx -d ayushk.online
 ```
 
-Follow prompts to enable HTTPS.
+---
+
+## 🛠️ Troubleshooting
+
+| Issue              | Fix              |
+| ------------------ | ---------------- |
+| Site not loading   | Check port 80    |
+| Domain not working | Wait for DNS     |
+| Timeout            | Check Elastic IP |
+| Wrong page         | Restart Nginx    |
 
 ---
 
 ## ✅ Best Practices
 
-* Always use Elastic IP (avoid dynamic IP issues)
-* Enable HTTPS for security
-* Use proper DNS TTL values
-* Regularly update your server
+* Use Elastic IP
+* Enable HTTPS
+* Keep security groups minimal
+* Regularly update server
 
 ---
 
@@ -307,8 +303,9 @@ Follow prompts to enable HTTPS.
 
 You have successfully:
 
-* Hosted a static website using Nginx on EC2
-* Connected a custom domain using Route 53
-* Made your website accessible globally
+* Hosted a website on EC2
+* Configured Nginx
+* Connected custom domain via Route 53
+* Made your site live globally 🌍
 
 ---
