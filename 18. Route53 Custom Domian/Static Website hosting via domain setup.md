@@ -6,9 +6,7 @@
 
 This project demonstrates how to host a static website on an AWS EC2 instance using **Nginx** and connect it to a custom domain (**ayushk.online**) purchased from **Hostinger** using **AWS Route 53**.
 
----
-
-## 🏗️ Architecture Overview
+### 🏗️ Architecture Overview
 
 ```
 
@@ -24,7 +22,7 @@ EC2 Instance (Ubuntu)
 ↓
 Nginx Web Server
 ↓
-Static Website Files (Downloaded using wget)
+Static Website Files (HTML, CSS, JS)
 
 ````
 
@@ -32,9 +30,9 @@ Static Website Files (Downloaded using wget)
 
 ## 🎯 Objective
 
-- Host a static website using Nginx on EC2  
-- Download website files directly on server using `wget`  
-- Configure custom domain using Route 53  
+- Host a static website using Nginx on EC2
+- Configure a custom domain using Route 53
+- Make the website publicly accessible via your domain
 
 ---
 
@@ -42,8 +40,8 @@ Static Website Files (Downloaded using wget)
 
 - ✅ AWS Account  
 - ✅ Domain purchased from Hostinger (ayushk.online)  
-- ✅ Basic Linux knowledge  
-- ✅ Public URL of your HTML template (ZIP file or GitHub repo)
+- ✅ Basic Linux command knowledge  
+- ✅ SSH client (Git Bash / Terminal)
 
 ---
 
@@ -52,15 +50,18 @@ Static Website Files (Downloaded using wget)
 1. Go to **AWS Console → EC2 → Launch Instance**
 2. Configure:
    - **AMI**: Ubuntu Server 22.04
-   - **Instance Type**: t2.micro
+   - **Instance Type**: t2.micro (Free Tier)
+   - **Key Pair**: Create or select existing
    - **Security Group**:
      ```
      SSH (22)     → My IP
-     HTTP (80)    → Anywhere
-     HTTPS (443)  → Anywhere
+     HTTP (80)    → Anywhere (0.0.0.0/0)
+     HTTPS (443)  → Anywhere (0.0.0.0/0)
      ```
 
-3. Connect via SSH:
+3. Launch the instance
+
+### 🔐 Connect to EC2 via SSH
 
 ```bash
 ssh -i your-key.pem ubuntu@your-ec2-public-ip
@@ -70,115 +71,135 @@ ssh -i your-key.pem ubuntu@your-ec2-public-ip
 
 ## ⚙️ Step 2: Install and Configure Nginx
 
-```bash id="cmd1"
+### 📦 Install Nginx
+
+```bash
 sudo apt update -y
-sudo apt install nginx wget unzip -y
+sudo apt install nginx -y
 ```
 
-```bash id="cmd2"
+### ▶️ Start and Enable Nginx
+
+```bash
 sudo systemctl start nginx
 sudo systemctl enable nginx
 ```
 
-✅ Verify:
+### ✅ Verify Installation
+
+Open browser:
 
 ```
 http://your-ec2-public-ip
 ```
 
+You should see the **Nginx default page**
+
 ---
 
-## 📥 Step 3: Download & Deploy Website using wget
+## 📁 Step 3: Deploy Static Website
 
-### 🔽 Download Template
+### 📤 Upload Website Files
 
-Replace the link with your actual template URL:
+Use SCP or WinSCP:
 
-```bash id="cmd3"
-wget https://example.com/template.zip
-```
-
-### 📦 Unzip Files
-
-```bash id="cmd4"
-unzip template.zip
+```bash
+scp -i your-key.pem -r ./website/* ubuntu@your-ec2-public-ip:/home/ubuntu/
 ```
 
 ### 📂 Move Files to Nginx Directory
 
-```bash id="cmd5"
+```bash
 sudo rm -rf /var/www/html/*
-sudo cp -r template/* /var/www/html/
+sudo cp -r /home/ubuntu/* /var/www/html/
 ```
-
-> ⚠️ Make sure `template/` is your extracted folder name
 
 ### 🔐 Set Permissions
 
-```bash id="cmd6"
+```bash
 sudo chmod -R 755 /var/www/html
 ```
 
 ### 🔄 Restart Nginx
 
-```bash id="cmd7"
+```bash
 sudo systemctl restart nginx
 ```
 
-🎉 Open browser:
+Now refresh:
 
 ```
 http://your-ec2-public-ip
 ```
 
+🎉 Your website should be live!
+
 ---
 
 ## 🌍 Step 4: Configure Elastic IP
 
-1. Go to **EC2 → Elastic IPs**
-2. Allocate new IP
-3. Associate with your EC2 instance
+### 📌 Why Elastic IP?
 
-📌 Why? Prevents IP change after restart
+EC2 public IP changes on restart. Elastic IP gives a **static IP**.
+
+### 🛠️ Steps:
+
+1. Go to **EC2 → Elastic IPs**
+2. Click **Allocate Elastic IP**
+3. Click **Associate Elastic IP**
+4. Attach to your EC2 instance
+
+✅ Save this IP (e.g., `13.xx.xx.xx`)
 
 ---
 
-## 🌐 Step 5: Configure Route 53
+## 🌐 Step 5: Configure AWS Route 53
 
-1. Open **Route 53 → Hosted Zones**
+1. Go to **Route 53 → Hosted Zones**
+2. Click **Create Hosted Zone**
 
-2. Create Hosted Zone:
+   * Domain Name: `ayushk.online`
+   * Type: Public Hosted Zone
 
-   * Domain: `ayushk.online`
+### 📄 Records Created:
 
-3. Copy NS records
+* **NS (Name Server)**
+* **SOA (Start of Authority)**
+
+Copy the **NS records**
 
 ---
 
 ## 🔁 Step 6: Update Nameservers in Hostinger
 
-Replace with Route 53 nameservers:
+1. Login to **Hostinger**
+2. Go to **Domain → DNS / Nameservers**
+3. Replace default nameservers with Route 53 NS records
+
+### Example:
 
 ```
-ns-xxx.awsdns-xx.com
-ns-xxx.awsdns-xx.net
-ns-xxx.awsdns-xx.org
-ns-xxx.awsdns-xx.co.uk
+ns-123.awsdns-45.com
+ns-678.awsdns-12.net
+ns-910.awsdns-34.org
+ns-111.awsdns-56.co.uk
 ```
 
-⏳ Wait for DNS propagation
+### ⏳ DNS Propagation
+
+* Takes **5 mins to 24 hours**
 
 ---
 
-## 🧾 Step 7: Create DNS Records
+## 🧾 Step 7: Create DNS Records in Route 53
 
-### A Record
+### ➤ Create A Record
 
 | Type | Name | Value      |
 | ---- | ---- | ---------- |
 | A    | @    | Elastic IP |
 
-### WWW Record
+### ➤ Optional: WWW Subdomain
 
 | Type | Name | Value      |
 | ---- | ---- | ---------- |
@@ -188,76 +209,97 @@ ns-xxx.awsdns-xx.co.uk
 
 ## 🧪 Step 8: Testing
 
-Open:
+Open in browser:
 
 ```
 http://ayushk.online
+```
+
+or
+
+```
+http://www.ayushk.online
 ```
 
 ---
 
 ## ⚠️ Troubleshooting
 
-| Problem            | Fix                  |
-| ------------------ | -------------------- |
-| Site not opening   | Check Security Group |
-| Domain not working | Wait DNS propagation |
-| Wrong page         | Check file path      |
-| wget failed        | Verify URL           |
+| Issue                | Solution                            |
+| -------------------- | ----------------------------------- |
+| ❌ Site not loading   | Check Security Group (Port 80 open) |
+| ❌ Domain not working | Wait for DNS propagation            |
+| ❌ Wrong site         | Check Nginx directory files         |
+| ❌ IP mismatch        | Verify Elastic IP                   |
+| ❌ Permission denied  | Fix file permissions                |
 
 ---
 
-## 🏗️ Architecture Diagram
+## 🏗️ Project Architecture Diagram
 
 ```
-[User]
-  ↓
-[Domain: ayushk.online]
-  ↓
-[Route 53]
-  ↓
-[Elastic IP]
-  ↓
-[EC2 + Nginx]
-  ↓
-[Website Files (wget)]
+[ User ]
+   ↓
+[ Domain: ayushk.online ]
+   ↓
+[ Route 53 DNS ]
+   ↓
+[ Elastic IP ]
+   ↓
+[ EC2 Ubuntu Instance ]
+   ↓
+[ Nginx Server ]
+   ↓
+[ Static Website Files ]
 ```
 
 ---
 
 ## 📘 Key Learnings
 
-* EC2 setup & SSH
-* Nginx configuration
-* wget file download in Linux
-* Route 53 DNS setup
-* Domain linking
+* ✅ EC2 instance setup and configuration
+* ✅ Nginx web server deployment
+* ✅ Static website hosting
+* ✅ Elastic IP usage
+* ✅ DNS management with Route 53
+* ✅ Domain linking from Hostinger
 
 ---
 
-## 🎁 Bonus Improvements
+## 🎁 Bonus: How to Improve This Project
 
-### 🔐 Enable HTTPS
+### 🔐 Enable HTTPS (SSL)
 
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx
 ```
 
-### 🚀 CI/CD
+---
 
-* GitHub Actions auto deployment
+### 🚀 CI/CD Pipeline
 
-### ☁️ Alternative
+* Use GitHub Actions to auto-deploy changes
 
-* S3 + CloudFront hosting
+---
+
+### ☁️ Alternative Hosting
+
+* Use **S3 + CloudFront** for serverless hosting
+
+---
+
+### 🔒 Security Enhancements
+
+* Configure firewall (UFW)
+* Enable fail2ban
 
 ---
 
 ## 🏁 Conclusion
 
-You successfully:
+You have successfully:
 
-* Hosted a static website using Nginx
-* Downloaded files using wget
-* Connected domain via Route 53
+* Hosted a static website on AWS EC2 using Nginx
+* Connected a custom domain using Route 53
+* Made your website publicly accessible
