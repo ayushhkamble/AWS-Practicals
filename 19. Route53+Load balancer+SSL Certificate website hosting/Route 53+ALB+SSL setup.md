@@ -112,7 +112,72 @@ sudo wget <file-link>
 ```
 
 ---
+### 🔹 Option 3: Upload Files using SCP (Recommended for Local Files)
 
+If your website files are on your local machine, use **SCP (Secure Copy Protocol)** to transfer them to your EC2 instance.
+
+---
+
+### 📥 Copy Files from Local to EC2
+
+Run this command from your **local terminal / command prompt**:
+
+```bash
+scp -i key.pem index.html ubuntu@<EC2_PUBLIC_IP>:/home/ubuntu/
+scp -i key.pem style.css ubuntu@<EC2_PUBLIC_IP>:/home/ubuntu/
+scp -i key.pem script.js ubuntu@<EC2_PUBLIC_IP>:/home/ubuntu/
+```
+
+---
+
+### 📂 Move Files to Nginx Directory
+
+Now connect to your EC2 instance and move files:
+
+```bash
+sudo mv /home/ubuntu/index.html /var/www/html/
+sudo mv /home/ubuntu/style.css /var/www/html/
+sudo mv /home/ubuntu/script.js /var/www/html/
+```
+
+---
+
+### 🔐 Set Proper Permissions
+
+```bash
+sudo chmod -R 755 /var/www/html
+```
+
+---
+
+### 🔄 Restart Nginx
+
+```bash
+sudo systemctl restart nginx
+```
+
+---
+
+### ✅ Verify
+
+Open browser:
+
+```
+http://<EC2_PUBLIC_IP>
+```
+
+---
+
+## 💡 Pro Tip
+
+* Use SCP when working with **multiple files or full project folders**
+* For entire folder upload:
+
+```bash
+scp -i key.pem -r my-website-folder ubuntu@<EC2_PUBLIC_IP>:/home/ubuntu/
+```
+
+---
 ### 🔹 Verify
 
 Open browser:
