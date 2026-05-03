@@ -135,13 +135,19 @@ import json
 import boto3
 
 sns_client = boto3.client('sns')
-
-# Replace with your SNS Topic ARN
-SNS_TOPIC_ARN = "arn:aws:sns:ap-south-1:123456789012:s3-event-topic"
+SNS_TOPIC_ARN = "YOUR_SNS_TOPIC_ARN"
 
 def lambda_handler(event, context):
+    print("Received event:", json.dumps(event))
+
+    # ✅ Check if 'Records' exists
+    if 'Records' not in event:
+        return {
+            'statusCode': 400,
+            'body': json.dumps('No S3 event found')
+        }
+
     try:
-        # Extract S3 event details
         for record in event['Records']:
             event_name = record['eventName']
             bucket_name = record['s3']['bucket']['name']
@@ -149,24 +155,20 @@ def lambda_handler(event, context):
 
             message = f"""
             🚨 S3 Event Notification 🚨
-            
             Event Type: {event_name}
-            Bucket Name: {bucket_name}
-            File Name: {object_key}
+            Bucket: {bucket_name}
+            File: {object_key}
             """
 
-            # Publish message to SNS
-            response = sns_client.publish(
+            sns_client.publish(
                 TopicArn=SNS_TOPIC_ARN,
                 Message=message,
-                Subject="S3 Event Alert 🚀"
+                Subject="S3 Event Alert"
             )
-
-            print("Notification sent! Message ID:", response['MessageId'])
 
         return {
             'statusCode': 200,
-            'body': json.dumps('Success!')
+            'body': json.dumps('Success')
         }
 
     except Exception as e:
